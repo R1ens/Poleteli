@@ -1,0 +1,42 @@
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+import numpy as np
+
+# Coordinates for latitudes and longitudes for 3 orbits
+latitude_deg = [
+    39.757, 52.817, 59.112, 54.79, 42.681, 27.171, 10.333, -6.897,
+    -23.871, -39.757, -52.817, -59.112, -54.79, -42.681, -27.171, -10.333,
+    6.897, 23.871, 39.757, 52.817, 59.112, 54.79, 42.681, 27.171, 10.333,
+    -6.897, -23.871, -39.757, -52.817, -59.112, -54.79, -42.681, -27.171, -10.333,
+    6.897, 23.871, 39.757, 52.817, 59.112, 54.79, 42.681, 27.171, 10.333, -6.897,
+    -23.871, -39.757, -52.817, -59.112, -54.79, -42.681, -27.171, -10.333, 6.897, 23.871, 39.757
+]
+
+longitude_deg = [
+    -20.23, 0.591, 33.516, 68.307, 91.298, 105.441, 115.579, 124.473,
+    134.123, 147.037, 167.613, -159.678, -125.047, -102.141, -87.998, -77.775, -68.722, -58.856,
+    -45.697, -24.875, 8.049, 42.841, 65.831, 79.974, 90.112, 99.006, 108.656, 121.57,
+    142.146, 174.855, -150.513, -127.608, -113.465, -103.242, -94.188, -84.322, -71.163, -50.342,
+    -17.417, 17.374, 40.365, 54.508, 64.646, 73.539, 83.19, 96.103, 116.679, 149.389, -175.98,
+    -153.074, -138.931, -128.708, -119.655, -109.789, -96.63
+]
+
+# Adjusting longitudes to prevent line breaks across the map
+longitude_adj = [longitude_deg[0]]
+for lon in longitude_deg[1:]:
+    # Detect wrap-around and adjust
+    if abs(lon - longitude_adj[-1]) > 180:
+        if lon > 0:
+            lon -= 360
+        else:
+            lon += 360
+    longitude_adj.append(lon)
+
+# Plotting map and trajectory
+fig = plt.figure(figsize=(10, 5))
+ax = plt.axes(projection=ccrs.PlateCarree())
+ax.stock_img()
+ax.coastlines()
+ax.plot(longitude_adj, latitude_deg, marker='o', color='blue', markersize=2, linestyle='-', transform=ccrs.PlateCarree())
+plt.title("Satellite Ground Track for 3 Orbits")
+plt.show()
