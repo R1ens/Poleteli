@@ -1,0 +1,40 @@
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+
+# Data for latitude and longitude from the second file (corrected for equal length)
+latitude_deg_2 = [
+    53.336, 63.982, 62.595, 50.417, 34.094, 16.367, -1.825,
+    -19.97, -37.518, -53.336, -63.982, -62.595, -50.417, -34.094, -16.367,
+    1.825, 19.97, 37.518, 53.336, 63.982, 62.595, 50.417, 34.094, 16.367,
+    -1.825, -19.97, -37.518, -53.336, -63.982, -62.595, -50.417, -34.094, -16.367,
+    1.825, 19.97, 37.518, 53.336, 63.982, 62.595, 50.417, 34.094, 16.367, -1.825,
+    -19.97, -37.518, -53.336, -63.982, -62.595, -50.417, -34.094, -16.367, 1.825, 19.97, 37.518
+]
+
+longitude_deg_2 = [
+    18.479, 50.309, 94.091, 121.976, 136.391, 145.41, 152.587,
+    159.894, 169.463, -174.487, -142.956, -99.436, -71.745, -57.433, -48.414, -41.134,
+    -33.633, -23.802, -7.453, 24.377, 68.159, 96.045, 110.459, 119.478, 126.655,
+    133.962, 143.531, 159.581, -168.888, -125.368, -97.676, -83.365, -74.346, -67.066,
+    -59.565, -49.734, -33.385, -1.555, 42.227, 70.113, 84.527, 93.546, 100.723, 108.03,
+    117.599, 133.649, 165.18, -151.3, -123.608, -109.297, -100.278, -92.998, -85.496, -75.665
+]
+
+# Adjust longitudes to avoid line jumps
+longitude_adj_2 = [longitude_deg_2[0]]
+for lon in longitude_deg_2[1:]:
+    if abs(lon - longitude_adj_2[-1]) > 180:
+        if lon > 0:
+            lon -= 360
+        else:
+            lon += 360
+    longitude_adj_2.append(lon)
+
+# Plotting the map with trajectory
+fig = plt.figure(figsize=(10, 5))
+ax = plt.axes(projection=ccrs.PlateCarree())
+ax.stock_img()
+ax.coastlines()
+ax.plot(longitude_adj_2, latitude_deg_2, marker='o', color='blue', markersize=2, linestyle='-', transform=ccrs.PlateCarree())
+plt.title("Satellite Ground Track for 3 Orbits (Adjusted Longitude)")
+plt.show()
