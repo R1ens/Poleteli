@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+import numpy as np
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+
+# Данные долготы и широты для 3 витков, выровненные по длине
+longitude_deg = np.array([
+    65.043, 69.689, 79.623, 115.552, -167.221, -144.329, -136.868, 
+    -133.014, -130.185, -127.209, -122.723, -112.93, -77.105, 
+    0.067, 22.959, 30.476, 34.434, 37.403, 40.539, 45.185, 55.119, 
+    91.047, 168.275, np.nan, -168.833, -161.372, -157.518, -154.689, 
+    -151.713, -147.227, -137.434, -101.609, -24.437, -1.545, 
+    5.972, 9.93, 12.899, 16.035, 20.681, 30.615, 66.543, 143.77, 
+    166.663, 174.124, 177.978, np.nan, -179.193, -176.217, -171.731, 
+    -161.938, -126.113, -48.942, -26.049, -18.533, -14.574, 
+    -11.605
+])
+
+latitude_deg = np.array([
+    22.605, 42.034, 60.802, 76.223, 72.489, 55.299, 36.245, 16.723, -2.954,
+    -22.605, -42.034, -60.802, -76.223, -72.489, -55.299, -36.245, -16.723,
+    2.954, 22.605, 42.034, 60.802, 76.223, 72.489, np.nan, 55.299, 36.245, 16.723,
+    -2.954, -22.605, -42.034, -60.802, -76.223, -72.489, -55.299, -36.245,
+    -16.723, 2.954, 22.605, 42.034, 60.802, 76.223, 72.489, 55.299, 36.245,
+    np.nan, 16.723, -2.954, -22.605, -42.034, -60.802, -76.223, -72.489, -55.299,
+    -36.245, -16.723, 2.954
+])
+
+# Функция для добавления разрывов при пересечении ±180° долготы
+def add_nan_breaks(longitudes, latitudes):
+    new_longitudes = []
+    new_latitudes = []
+    for i in range(1, len(longitudes)):
+        new_longitudes.append(longitudes[i - 1])
+        new_latitudes.append(latitudes[i - 1])
+        
+        # Проверяем, есть ли пересечение через границу ±180°
+        if abs(longitudes[i] - longitudes[i - 1]) > 180:
+            new_longitudes.append(np.nan)
+            new_latitudes.append(np.nan)
+    
+    # Добавляем последний элемент
+    new_longitudes.append(longitudes[-1])
+    new_latitudes.append(latitudes[-1])
+    
+    return np.array(new_longitudes), np.array(new_latitudes)
+
+# Добавляем разрывы при переходе через границу ±180°
+longitude_deg, latitude_deg = add_nan_breaks(longitude_deg, latitude_deg)
+
+# Создаем карту с трассой для каждого витка отдельно, без соединений между витками
+fig = plt.figure(figsize=(12, 6))
+ax = plt.axes(projection=ccrs.PlateCarree())
+ax.stock_img()  # Фоновая карта Земли
+ax.coastlines()
+
+# Наносим только реальные траектории каждого витка, без соединения витков между собой
+ax.plot(longitude_deg, latitude_deg, marker='o', markersize=4, linestyle='-', color='blue', label="Satellite Orbit Track")
+
+# Добавляем заголовок и легенду
+plt.title("Satellite Real Track over 3 Orbits without Long Connecting Lines")
+plt.legend(loc="upper right")
+
+plt.show()
